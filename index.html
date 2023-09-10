@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>المهام</title>
+
+    <style>
+        body{
+            background-color: rgb(33, 33, 73);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .mainbox{
+            background-color: rgb(202, 205, 208);
+            width: 50%;
+            margin: auto;
+            margin-top: 200px;
+        }
+
+        .header{
+            background-color: blue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+        }
+        .titel{
+            display: inline;
+            margin: 0;
+            color: white;
+        }
+        .circl{
+            border-radius: 50%;
+            border: none;
+            background-color: white;
+            font-size: 20px;
+            float: right !important;
+            width: 40px;
+            height: 40px;
+            line-height: 0;
+        }
+
+        #tasks{
+            direction: rtl;
+            padding: 10px;
+        }
+
+        .task{
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 2px;
+        }
+
+        .done{
+            background-color: rgb(158, 253, 160);
+
+        }
+
+        .task:hover{
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.666);
+        }
+
+        .titelTask{
+            width: 60%;
+        }
+
+        h3{
+            margin: 0;
+        }
+
+        p{
+            margin: 0;
+        }
+        .btn{
+            width: 40%;
+            /* background-color: blueviolet; */
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .D{
+            background-color: rgb(64, 20, 20);
+            color: white;
+        }
+        .C{
+            background-color: rgb(94, 243, 97);
+            color: white;
+        }
+        .x{
+            background-color: rgb(237, 59, 47);
+            color: white;
+        }
+        .E{
+            background-color: rgb(194, 51, 199);
+            color: white;
+        }
+    </style>
+</head>
+<body dir="">
+
+    <div class="contener">
+
+        <div class="mainbox">
+
+            <div class="header">
+                <h1 class="titel">مهامي</h1>
+                <button class="circl" id="add-btn">
+                    <span class="material-symbols-outlined">
+                        add
+                    </span>
+                </button>
+            </div>
+
+            <div id="tasks"></div>
+
+        </div>
+    </div>
+
+
+
+
+    <script>
+
+        let tasks = [
+            {
+                "titel" : "قرءة قصص",
+                "date" : "14/10/2005",
+                "isDone" : true
+            },
+            {
+                "titel":"قرءة كتب",
+                "date":"12/10/2005",
+                "isDone": false
+            },
+            {
+                "titel":"قرءة روايات",
+                "date":"11/10/2005",
+                "isDone": false
+            },
+            {
+                "titel":"قرءة جرايد",
+                "date":"11/10/2005",
+                "isDone": true
+            }
+        ]
+
+        tasks = JSON.parse(localStorage.getItem("tasks")) 
+
+            function fullTasks(){
+            document.getElementById("tasks").innerHTML = ""
+            for(var task = 0 ; task < tasks.length ; task++){
+            let content =
+                `
+                <div class="task ${tasks[task].isDone ? 'done' : ''} ">
+                    <div class="titelTask">
+                        <h3> ${tasks[task].titel} </h3>
+                        <p>
+                            <span class="material-symbols-outlined">
+                                event_note
+                            </span>
+                            ${tasks[task].date}
+                        </p>
+                    </div>
+                    <div class="btn">
+                        <button class="circl D" onclick="delet(${task})">
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </button>
+                        ${tasks[task].isDone ? `
+                            <button class="circl x" onclick="correct(${task})">
+                                <span class="material-symbols-outlined">
+                                    cancel
+                                </span>
+                            </button>
+                            ` : `
+                            <button class="circl C" onclick="correct(${task})">
+                                <span class="material-symbols-outlined">
+                                    done
+                                </span>
+                            </button>
+                        `}
+
+                        <button class="circl E" onclick="upDate(${task})">
+                            <span class="material-symbols-outlined">
+                                edit
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+            `
+
+                document.getElementById("tasks").innerHTML += content
+            }
+        }
+
+
+            fullTasks()
+            document.getElementById("add-btn").addEventListener("click",function(){
+                let  now = new Date()
+                let  date = (now.getDay() + 16) + "/" + (now.getMonth() + 1) + "/" + now.getFullYear() + "  |   " + (now.getHours()) + ":" + now.getMinutes()
+                let textTask =  prompt("ادخل اسم المهمة")
+                let objTask = {
+                    "titel": textTask,
+                    "date":date,
+                    "isDone": false
+                }
+                tasks.push(objTask)
+                storagetasks()
+                fullTasks()
+            })
+
+            function delet(task){
+                let titel = tasks[task]
+                let isConfirm = confirm("هل تريد حذف مهمة   :  " + titel.titel)
+                if(isConfirm){
+                    tasks.splice(task,1)
+                    storagetasks()
+                    fullTasks()
+                }
+            }
+
+            function upDate(task){
+                let upDateTask = tasks[task]
+                let upDate = prompt("ادخل المهمة الجديدة؟",upDateTask.titel)
+                upDateTask.titel = upDate
+                storagetasks()
+                fullTasks()
+            }
+            function correct(task){
+                let correct = tasks[task]
+                if(tasks[task].isDone){
+                    correct.isDone = false
+                }else{
+                    correct.isDone = true
+                }
+                storagetasks()
+
+                fullTasks()
+            }
+
+            //***********************************************************************************************//
+
+                function storagetasks(){
+                    localStorage.setItem("tasks",JSON.stringify(tasks))
+                }
+    </script>
+</body>
+</html>
